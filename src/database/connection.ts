@@ -1,4 +1,4 @@
-import { Sequelize } from "sequelize";
+import { Sequelize } from "sequelize-typescript";
 import dotenv from "dotenv";
 
 dotenv.config(); // Load environment variables
@@ -10,7 +10,10 @@ const sequelize = new Sequelize({
   host: process.env.DB_HOST,
   dialect: "mysql",
   port: Number(process.env.DB_PORT),
+  models:[__dirname + '/models']
 });
+
+
 
 // Test the database connection
 sequelize
@@ -22,4 +25,10 @@ sequelize
     console.error("❌ Unable to connect to the database:", error);
   });
 
-export default sequelize;
+
+  /// migression code
+  sequelize.sync({alter:true})
+.then(()=>{
+  console.log("migression success")
+})
+  export default sequelize;
