@@ -32,7 +32,7 @@ class AuthController {
   }
 
   // loginUser function (non-static)
-  async loginUser(req: Request, res: Response) {
+ static async loginUser(req: Request, res: Response) {
     const { email, password } = req.body;
 
     if (!email || !password) {

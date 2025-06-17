@@ -27,7 +27,7 @@ sequelize
 
 
   /// migression code
-  sequelize.sync({alter:true})
+  sequelize.sync({alter:false})
 .then(()=>{
   console.log("migression success")
 })

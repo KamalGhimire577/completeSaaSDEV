@@ -2,7 +2,7 @@ import {Table,Column,Model,DataType, PrimaryKey} from "sequelize-typescript"
 
 @Table({
   tableName: "users", //table name
-  modelName: "user", // project vitra mathi ko table lai asess garne name
+  modelName: "User", // project vitra mathi ko table lai asess garne name
   timestamps: true,
 })
 // class model ma vako kura taneko
@@ -16,7 +16,7 @@ class user extends Model {
   @Column({
     type: DataType.STRING,
   })
-  declare username: string;
+  declare userName: string;
   @Column({
     type: DataType.STRING,
   })
@@ -30,6 +30,10 @@ class user extends Model {
     type: DataType.ENUM("teacher", "institude", "super_admin", "student"),
     defaultValue: "student",
   })
-  declare role: string;
+  declare role: string; 
+  @Column ({
+    type :DataType.STRING
+  })
+  declare currentInstituteNumber :string;
 }
 export default user
