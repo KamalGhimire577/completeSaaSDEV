@@ -13,7 +13,10 @@ const createCourse =async(req:IExtendedRequest,res:Response)=>{
             message:"Please provide coursePrice,courseName,courseDescription,courseDuration,courseLevel"
         })
     }
-    const courseThumbnail = req.file ? req.file.fieldname :null
+    // this only give fielname text on database 
+    // const courseThumbnail = req.file ? req.file.fieldname : null;// terniory operator
+    const courseThumbnail = req.file ? `storage/${req.file.filename}` : null;
+    /// above was correct
      const returnData = await sequelize.query(
       `INSERT INTO course_${instituteNumber} (coursePrice,courseName,courseDescription,courseDuration,courseLevel,courseThumbnail)VALUES(?,?,?,?,?,?)`,
       {
@@ -23,7 +26,7 @@ const createCourse =async(req:IExtendedRequest,res:Response)=>{
           courseDescription,
           courseDuration,
           courseLevel,
-          courseThumbnail||''
+          courseThumbnail
         ],
       }
     )

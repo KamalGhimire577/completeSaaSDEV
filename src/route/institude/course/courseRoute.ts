@@ -4,7 +4,8 @@ import isLoggedIn from "../../../middleware/middleware";
 
 import asyncErrorHandler from "../../../services/asyncErrorHandler";
 import { createCourse, deleteCourse, getAllCourse, getSingleCourse } from "../../../controller/institute/course/courseController";
-//import { multer, storage } from "./../../../middleware/multerMiddleware";
+import { multer, storage } from "./../../../middleware/multerMiddleware";
+const upload =multer({storage:storage})
 const router: Router = express.Router();
 //const upload = multer({storage : storage}) // confugation gareko
 router
@@ -12,6 +13,7 @@ router
   .post(
     isLoggedIn,
     // upload.single("courseThumbnail"),
+    upload.single("courseThumbnail"),
     asyncErrorHandler(createCourse)
   )
   .get(asyncErrorHandler(getAllCourse));// fielname vaneko frontend /postman bata chai k name aairaxa file vanne kura ho

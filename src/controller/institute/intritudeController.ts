@@ -18,6 +18,7 @@ const createInstitute = async (
     instituteAddress,
     instituteVatNo = null,
     institutePanNo = null,
+    institudePhoto= null
   } = req.body;
 
   if (
@@ -44,6 +45,7 @@ const createInstitute = async (
       instituteAddress VARCHAR(255) NOT NULL,
       institutePanNo VARCHAR(255),
       instituteVatNo VARCHAR(255),
+      institudePhoto VARCHAR(255),
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
@@ -94,9 +96,10 @@ const createInstitute = async (
       }
     );
   }
-
+if(req.user){ 
+  req.user.currentInstituteNumber = instituteNumber};
   // Store for next middleware
-  res.locals.instituteNumber = instituteNumber;
+   
   next();
 };
 
@@ -108,7 +111,7 @@ const createTeacherTable = async (
 ) => {
   try {
     const instituteNumber =
-      res.locals.instituteNumber || req.user?.currentInstituteNumber;
+      req.user?.currentInstituteNumber;
 
     if (!instituteNumber) {
       return res.status(400).json({
@@ -145,7 +148,7 @@ const createStudentTable = async (
 ) => {
   try {
     const instituteNumber =
-      res.locals.instituteNumber || req.user?.currentInstituteNumber;
+       req.user?.currentInstituteNumber;
 
     if (!instituteNumber) {
       return res.status(400).json({
@@ -181,7 +184,7 @@ const createCourseTable = async (
 ) => {
   try {
     const instituteNumber =
-      res.locals.instituteNumber || req.user?.currentInstituteNumber;
+     req.user?.currentInstituteNumber;
 
     if (!instituteNumber) {
       return res.status(400).json({
@@ -196,7 +199,7 @@ const createCourseTable = async (
         coursePrice VARCHAR(255) NOT NULL,
         courseDuration VARCHAR(100) NOT NULL,
         courseLevel ENUM('beginner', 'intermediate', 'advance') NOT NULL,
-        courseThumbnail VARCHAR(200),
+        courseThumbnail VARCHAR(255),
         courseDescription TEXT,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -219,7 +222,7 @@ const createCategoryTable = async (
   next: NextFunction
 ) => {
   const instituteNumber =
-    res.locals.instituteNumber || req.user?.currentInstituteNumber;
+ req.user?.currentInstituteNumber;
 
   if (!instituteNumber) {
     return res
@@ -239,16 +242,8 @@ const createCategoryTable = async (
     )
   `);
 
-  // for (const category of categories) {
-  //   await sequelize.query(
-  //     `INSERT INTO category_${instituteNumber}(categoryName, categoryDescription) VALUES (?, ?)`,
-  //     {
-  //       replacements: [category.categoryName, category.categoryDescription],
-  //     }
-  //   );
-  // }
-
-  // next();
+//
+ 
 };
 
 export {
@@ -257,4 +252,4 @@ export {
   createStudentTable,
   createCourseTable,
   createCategoryTable,
-};
+}
