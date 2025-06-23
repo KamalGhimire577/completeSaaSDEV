@@ -221,18 +221,16 @@ const createCategoryTable = async (
   res: Response,
   next: NextFunction
 ) => {
-  const instituteNumber =
- req.user?.currentInstituteNumber;
+  try {
+    const instituteNumber = req.user?.currentInstituteNumber;
 
-  if (!instituteNumber) {
-    return res
-      .status(400)
-      .json({
+    if (!instituteNumber) {
+      return res.status(400).json({
         message: "Institute number missing for category table creation.",
       });
-  }
+    }
 
-  await sequelize.query(`
+    await sequelize.query(`
     CREATE TABLE IF NOT EXISTS category_${instituteNumber} (
       id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       categoryName VARCHAR(100) NOT NULL,
@@ -241,8 +239,17 @@ const createCategoryTable = async (
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
+    next();
+  } catch (error) {
+    console.error("❌ Error creating course table:", error);
+    res.status(500).json({
+      message: "Failed to create course table.",
+    });
+  }
 
 //
+
+
  
 };
 
