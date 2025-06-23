@@ -12,9 +12,9 @@ class AuthController {
       return;
     }
 
-    const { username, email, password } = req.body;
+    const { userName, email, password } = req.body;
 
-    if (!username || !email || !password) {
+    if (!userName || !email || !password) {
       res.status(400).json({ message: "All fields are required" });
       return;
     }
@@ -23,7 +23,7 @@ class AuthController {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await User.create({
-      username: username,
+      userName: userName,
       email: email,
       password: hashedPassword,
     });

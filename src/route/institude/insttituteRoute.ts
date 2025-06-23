@@ -7,17 +7,19 @@ import {
   createStudentTable,
   createTeacherTable,
 } from "../../controller/institute/intritudeController";
+import asyncErrorHandler from "../../services/asyncErrorHandler";
+import { multer, storage } from "./../../middleware/multerMiddleware";
 
 const router: Router = express.Router();
 
-router
-  .route("/")
-  .post(
-    isLoggedIn,
-    createInstitute,
-    createTeacherTable,
-    createStudentTable,
-    createCourseTable
-  );
+router.route("/").post(
+  isLoggedIn,
+  asyncErrorHandler(createInstitute),
+  asyncErrorHandler(createTeacherTable),
+  asyncErrorHandler(createStudentTable),
+  asyncErrorHandler(createCourseTable),
+  
+  )
+
 
 export default router;

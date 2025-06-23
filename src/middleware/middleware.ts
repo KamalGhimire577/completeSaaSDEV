@@ -35,7 +35,7 @@ const isLoggedIn = async (
     return;
   }
   // verify garne
-  jwt.verify(token, "thisissecret", async (erroraayo, resultaayo: any) => {
+  jwt.verify(token, "thisissecrethai", async (erroraayo, resultaayo: any) => {
     if (erroraayo) {
       res.status(403).json({
         message: "Token invalid vayooo",
@@ -48,7 +48,9 @@ const isLoggedIn = async (
       //             id : resultaayo.id
       //         }
       //     })
-      const userData = await User.findByPk(resultaayo.id);
+      const userData = await User.findByPk(resultaayo.id,{
+        attributes : ['id','currentInstituteNumber']
+      });// aafu lai chahiyeko kura haru set gerna milxa atribute bat the hami yiniharu lai forther use garna sakam
       /*
 
             userData = {
