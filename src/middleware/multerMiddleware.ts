@@ -1,28 +1,41 @@
-// multer configuration
-
 import { Request } from "express";
-import multer from "multer";
+import multer, { FileFilterCallback } from "multer";
+import path from "path";
 
-// locally file store garnu vayo
+// Storage configuration
 const storage = multer.diskStorage({
-  // location incoming file kata rakne vanne ho
-  // cb - callback function
-  // cb(error,success)
-  destination: function (req: Request, file: Express.Multer.File, cb: any) {
+  destination: function (
+    req: Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, destination: string) => void
+  ) {
     cb(null, "./src/storage");
   },
-  // mathi ko location deko ma rakey paxi, k name ma rakne vanne
-  filename: function (req: Request, file: Express.Multer.File, cb: any) {
+  filename: function (
+    req: Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, filename: string) => void
+  ) {
     cb(null, Date.now() + "-" + file.originalname);
   },
-  
 });
 
-/*
-1234 -- date.now() --> 1234-hello.pdf
-hello.pdf ---> multer --> location(src/storage/) --> haha_hello.pdf
-hello.pdf ---> multer --> location(storage) --> hello-123123.pdf 
+// File filter to allow only jpeg, jpg, png files
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
+  const allowedTypes = /jpeg|jpg|png/;
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (allowedTypes.test(ext)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files (jpg, jpeg, png) are allowed"));
+  }
+};
 
-*/
+// Create upload middleware using storage and fileFilter
+const upload = multer({ storage, fileFilter });
 
-export { multer, storage };
+export default upload;

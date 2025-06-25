@@ -1,22 +1,30 @@
-import express, { Router } from "express";
+// route/institute/instituteRoute.ts
+import  { Router } from "express";
 
 import isLoggedIn from "../../middleware/middleware";
+import upload from "../../middleware/multerMiddleware";
 import {
-  createCourseTable,
   createInstitute,
-  createStudentTable,
   createTeacherTable,
-} from "../../controller/institute/intrituteController";
+  createStudentTable,
+  createCourseTable,
+} from "../../controller/institute/intituteController";
 import asyncErrorHandler from "../../services/asyncErrorHandler";
-// import { multer, storage } from "../../middleware/multerMiddleware";
 
-const router:Router = express.Router();
+const router = Router();
 
-//const upload = multer({storage :storage})
-// fronent ans opstman bat k name ma aauxa file teslai fiel name vanva
-router.route("/").post(isLoggedIn,asyncErrorHandler(createInstitute), asyncErrorHandler(createTeacherTable), asyncErrorHandler(createStudentTable), asyncErrorHandler(createCourseTable),
-  
-  )
 
+// Debug test
+
+
+router.post(
+  "/creat",
+  isLoggedIn,
+  upload.single("instituteLogo"),
+  asyncErrorHandler(createInstitute),
+  asyncErrorHandler(createTeacherTable),
+  asyncErrorHandler(createStudentTable),
+  asyncErrorHandler(createCourseTable)
+);
 
 export default router;

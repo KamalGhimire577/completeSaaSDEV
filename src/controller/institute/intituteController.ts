@@ -5,21 +5,23 @@ import { IExtendedRequest } from "../../middleware/type";
 import User from "../../database/models/userModel";
 //import categories from "../../seed";
 
-// ---------------------- CREATE INSTITUTE ----------------------
 const createInstitute = async (
   req: IExtendedRequest,
   res: Response,
   next: NextFunction
 ) => {
   const {
+    
     instituteName,
     instituteEmail,
     institutePhoneNumber,
     instituteAddress,
-    instituteVatNo = null,
-    institutePanNo = null,
-    institudePhoto= null
+   
   } = req.body;
+ const institutePanNo = req.body.institutePanNo || null;
+ const instituteVatNo = req.body.instituteVatNo || null;
+
+  const instituteLogo = req.file ? req.file.filename : null;
 
   if (
     !instituteName ||
@@ -35,7 +37,6 @@ const createInstitute = async (
 
   const instituteNumber = generateRandomInsituteNumber();
 
-  // Create institute-specific table
   await sequelize.query(`
     CREATE TABLE IF NOT EXISTS institute_${instituteNumber} (
       id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -45,15 +46,17 @@ const createInstitute = async (
       instituteAddress VARCHAR(255) NOT NULL,
       institutePanNo VARCHAR(255),
       instituteVatNo VARCHAR(255),
-      institudePhoto VARCHAR(255),
+      instituteLogo VARCHAR(255),
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
 
   await sequelize.query(
-    `INSERT INTO institute_${instituteNumber}(instituteName, instituteEmail, institutePhoneNumber, instituteAddress, institutePanNo, instituteVatNo)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO institute_${instituteNumber} (
+      instituteName, instituteEmail, institutePhoneNumber,
+      instituteAddress, institutePanNo, instituteVatNo, instituteLogo
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
     {
       replacements: [
         instituteName,
@@ -62,11 +65,11 @@ const createInstitute = async (
         instituteAddress,
         institutePanNo,
         instituteVatNo,
+        instituteLogo,
       ],
     }
   );
 
-  // Create history table if not exists
   await sequelize.query(`
     CREATE TABLE IF NOT EXISTS user_institute (
       id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -75,7 +78,6 @@ const createInstitute = async (
     )
   `);
 
-  // Store reference in user_institute and update user role
   if (req.user) {
     await sequelize.query(
       `INSERT INTO user_institute(userId, instituteNumber) VALUES (?, ?)`,
@@ -90,19 +92,15 @@ const createInstitute = async (
         role: "institute",
       },
       {
-        where: {
-          id: req.user.id,
-        },
+        where: { id: req.user.id },
       }
     );
+
+    req.user.currentInstituteNumber = instituteNumber;
   }
-if(req.user){ 
-  req.user.currentInstituteNumber = instituteNumber};
-  // Store for next middleware
-   
+
   next();
 };
-
 // ---------------------- CREATE TEACHER TABLE ----------------------
 const createTeacherTable = async (
   req: IExtendedRequest,
@@ -138,7 +136,7 @@ const createTeacherTable = async (
     console.error("Error creating teacher table:", error);
     res.status(500).json({ message: "Failed to create teacher table." });
   }
-};
+}
 
 // ---------------------- CREATE STUDENT TABLE ----------------------
 const createStudentTable = async (
@@ -239,6 +237,8 @@ const createCategoryTable = async (
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
+  console.log("✅ Received body:", req.body);
+  console.log("✅ Received file:", req.file);
     next();
   } catch (error) {
     console.error("❌ Error creating course table:", error);
