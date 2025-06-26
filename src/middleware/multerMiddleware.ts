@@ -10,6 +10,7 @@ const storage = multer.diskStorage({
     cb: (error: Error | null, destination: string) => void
   ) {
     cb(null, "./src/storage");
+    
   },
   filename: function (
     req: Request,

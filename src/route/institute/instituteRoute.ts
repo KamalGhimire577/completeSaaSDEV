@@ -1,30 +1,27 @@
 // route/institute/instituteRoute.ts
-import  { Router } from "express";
-
+import { Router } from "express";
 import isLoggedIn from "../../middleware/middleware";
-import upload from "../../middleware/multerMiddleware";
 import {
   createInstitute,
   createTeacherTable,
   createStudentTable,
   createCourseTable,
+  createCategoryTable, // ✅ Import the new category table creation middleware
 } from "../../controller/institute/intituteController";
 import asyncErrorHandler from "../../services/asyncErrorHandler";
 
 const router = Router();
 
-
-// Debug test
-
-
+// Route without file upload (no multer)
 router.post(
-  "/creat",
+  "/create",
   isLoggedIn,
-  upload.single("instituteLogo"),
   asyncErrorHandler(createInstitute),
   asyncErrorHandler(createTeacherTable),
   asyncErrorHandler(createStudentTable),
-  asyncErrorHandler(createCourseTable)
+  asyncErrorHandler(createCourseTable),
+  asyncErrorHandler(createCategoryTable) // ✅ Add this here
+  
 );
 
 export default router;

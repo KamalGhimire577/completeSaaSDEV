@@ -2,15 +2,14 @@ import { Sequelize } from "sequelize-typescript";
 import dotenv from "dotenv";
 
 dotenv.config(); // Load environment variables
-
 const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   username: process.env.DB_USERNAME,
-  password: process.env.DB_PASS,
+  password: process.env.DB_PASSWORD, // <-- Use DB_PASSWORD here, not DB_PASS
   host: process.env.DB_HOST,
   dialect: "mysql",
   port: Number(process.env.DB_PORT),
-  models:[__dirname + '/models']
+  models: [__dirname + "/models"],
 });
 
 

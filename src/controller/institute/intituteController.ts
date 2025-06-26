@@ -21,7 +21,8 @@ const createInstitute = async (
  const institutePanNo = req.body.institutePanNo || null;
  const instituteVatNo = req.body.instituteVatNo || null;
 
-  const instituteLogo = req.file ? req.file.filename : null;
+
+
 
   if (
     !instituteName ||
@@ -32,21 +33,22 @@ const createInstitute = async (
     return res.status(400).json({
       message:
         "Please provide instituteName, instituteEmail, institutePhoneNumber, and instituteAddress.",
-    });
+    })
+    return
   }
 
   const instituteNumber = generateRandomInsituteNumber();
 
   await sequelize.query(`
     CREATE TABLE IF NOT EXISTS institute_${instituteNumber} (
-      id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
       instituteName VARCHAR(255) NOT NULL,
-      instituteEmail VARCHAR(255) NOT NULL,
-      institutePhoneNumber VARCHAR(255) NOT NULL,
+      instituteEmail VARCHAR(255) NOT NULL UNIQUE ,
+      institutePhoneNumber VARCHAR(255) NOT NULL UNIQUE,
       instituteAddress VARCHAR(255) NOT NULL,
-      institutePanNo VARCHAR(255),
-      instituteVatNo VARCHAR(255),
-      instituteLogo VARCHAR(255),
+      institutePanNo VARCHAR(60),
+      instituteVatNo VARCHAR(45),
+      
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
@@ -55,8 +57,8 @@ const createInstitute = async (
   await sequelize.query(
     `INSERT INTO institute_${instituteNumber} (
       instituteName, instituteEmail, institutePhoneNumber,
-      instituteAddress, institutePanNo, instituteVatNo, instituteLogo
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      instituteAddress, institutePanNo, instituteVatNo 
+    ) VALUES (?, ?, ?, ?, ?, ?)`,
     {
       replacements: [
         instituteName,
@@ -64,19 +66,19 @@ const createInstitute = async (
         institutePhoneNumber,
         instituteAddress,
         institutePanNo,
-        instituteVatNo,
-        instituteLogo,
+        instituteVatNo
+       
       ],
     }
   );
 
   await sequelize.query(`
-    CREATE TABLE IF NOT EXISTS user_institute (
-      id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-      userId VARCHAR(255) REFERENCES users(id),
-      instituteNumber INT UNIQUE
+     CREATE TABLE IF NOT EXISTS user_institute (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    userId VARCHAR(255) REFERENCES users(id), 
+    instituteNumber INT UNIQUE
     )
-  `);
+  `);// users xa mero table ko name so 
 
   if (req.user) {
     await sequelize.query(
@@ -95,9 +97,9 @@ const createInstitute = async (
         where: { id: req.user.id },
       }
     );
-
-    req.user.currentInstituteNumber = instituteNumber;
-  }
+   } if (req.user) {
+     req.user.currentInstituteNumber = instituteNumber;
+   }
 
   next();
 };
