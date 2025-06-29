@@ -15,8 +15,9 @@ const createCourse =async(req:IExtendedRequest,res:Response)=>{
     }
     // this only give fielname text on database 
     // const courseThumbnail = req.file ? req.file.fieldname : null;// terniory operator
-    const courseThumbnail = req.file ? `storage/${req.file.filename}` : null;
+   // const courseThumbnail = req.file ? `storage/${req.file.filename}` : null;
     /// above was correct
+    const courseThumbnail =req.file?req.file.path : null
      const returnData = await sequelize.query(
       `INSERT INTO course_${instituteNumber} (coursePrice,courseName,courseDescription,courseDuration,courseLevel,courseThumbnail)VALUES(?,?,?,?,?,?)`,
       {
@@ -31,8 +32,10 @@ const createCourse =async(req:IExtendedRequest,res:Response)=>{
       }
     )
     console.log (returnData)
+    console.log("Uploaded File:", req.file);
     res.status(200).json({
         message: "course created sucessfully"
+
     })
 
 }
@@ -61,14 +64,26 @@ const deleteCourse =async(req:IExtendedRequest,res:Response)=>{
   });
 }
 
-const getAllCourse =async(req:IExtendedRequest,res:Response)=>{
-    const instituteNumber =req.user?.currentInstituteNumber;
-    const courses = await sequelize.query(`SELECT FROM course_${instituteNumber}`)
-res.status (200).json({
-    message :"Courses fetched",
-    data :courses
-})
-}
+const getAllCourse = async (req: IExtendedRequest, res: Response) => {
+  const instituteNumber = req.user?.currentInstituteNumber;
+
+    // Get all course-related tables
+ const datas = await sequelize.query(`SHOW TABLES LIKE 'course_%';`);
+
+    // Query dynamic table
+    const tableName = `course_${instituteNumber}`;
+    const courses = await sequelize.query(`SELECT * FROM \`${tableName}\`;`);
+
+     res.status(200).json({
+      message: "Courses fetched",
+      data: courses,
+      datas,
+    });
+    return;
+  } 
+
+
+
 const getSingleCourse = async (req:IExtendedRequest,res:Response)=>{
     const instituteNumber = req.user?.currentInstituteNumber;
     const courseId = req.params.id

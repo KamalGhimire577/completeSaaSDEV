@@ -5,4 +5,5 @@ export interface IExtendedRequest extends Request {
     id: string;
     currentInstituteNumber: string | number;
   };
+  instituteNumber?:string | number
 }

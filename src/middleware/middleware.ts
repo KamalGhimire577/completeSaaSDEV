@@ -65,7 +65,7 @@ const isLoggedIn = async (
         });
       } else {
         req.user = userData;
-        next();
+         next();
       }
     }
   });
