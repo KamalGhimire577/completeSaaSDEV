@@ -11,9 +11,10 @@ const router: Router = express.Router();
 
 router
   .route("/")
-  .post(isLoggedIn, asyncErrorHandler(createCategory))
-  .get(isLoggedIn, asyncErrorHandler(getCategories));
+  .post(isLoggedIn,asyncErrorHandler(createCategory))
+  .get(isLoggedIn,asyncErrorHandler(getCategories));
 
 router.route("/:id").delete(isLoggedIn, asyncErrorHandler(deleteCategory));
 
 export default router;
+//mero category route ma problem xa sir

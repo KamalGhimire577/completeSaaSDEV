@@ -6,6 +6,7 @@ import { QueryTypes } from "sequelize";
 const createCategory = async (req: IExtendedRequest, res: Response) => {
   const instituteNumber = req.user?.currentInstituteNumber;
   const { categoryName, categoryDescription } = req.body;
+  console.log("helllo")
   if (!categoryName || !categoryDescription) {
    res.status(400).json({
       message: "Please provide categoryName, categoryDescription",

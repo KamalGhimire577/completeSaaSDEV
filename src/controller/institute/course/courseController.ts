@@ -3,7 +3,7 @@ import sequelize from "../../../database/connection";
 
 import { IExtendedRequest } from "../../../middleware/type";
 
-
+import { QueryTypes } from "sequelize";
 
 const createCourse =async(req:IExtendedRequest,res:Response)=>{
     const instituteNumber =req.user?.currentInstituteNumber
@@ -19,19 +19,20 @@ const createCourse =async(req:IExtendedRequest,res:Response)=>{
     /// above was correct
     const courseThumbnail =req.file?req.file.path : null
      const returnData = await sequelize.query(
-      `INSERT INTO course_${instituteNumber} (coursePrice,courseName,courseDescription,courseDuration,courseLevel,courseThumbnail,categoryId)VALUES(?,?,?,?,?,?,?)`,
-      {
-        replacements: [
-          coursePrice,
-          courseName,
-          courseDescription,
-          courseDuration,
-          courseLevel,
-          courseThumbnail,
-          categoryId
-        ],
-      }
-    )
+       `INSERT INTO course_${instituteNumber} (coursePrice,courseName,courseDescription,courseDuration,courseLevel,courseThumbnail,categoryId)VALUES(?,?,?,?,?,?,?)`,
+       {
+         type: QueryTypes.INSERT,
+         replacements: [
+           coursePrice,
+           courseName,
+           courseDescription,
+           courseDuration,
+           courseLevel,
+           courseThumbnail,
+           categoryId,
+         ],
+       }
+     );
     console.log (returnData)
     console.log("Uploaded File:", req.file);
     res.status(200).json({
@@ -46,10 +47,11 @@ const deleteCourse =async(req:IExtendedRequest,res:Response)=>{
   //acess
   /// first ma course axist garxa ki nai check garum ami delete garam
 
-  const[courseData] = await sequelize.query(
+  const courseData = await sequelize.query(
     `SELECT * FROM course_${instituteNumber}WHERE id =?`,
-    { replacements: [courseId] }
-  );
+    { replacements: [courseId],
+       type: QueryTypes.SELECT 
+      });
   // yo typesript ko error ho so hamile yeslai [courseData] garer thik parxam
   if (courseData.length == 0) {
     return res.status(404).json({
@@ -59,6 +61,7 @@ const deleteCourse =async(req:IExtendedRequest,res:Response)=>{
 
   await sequelize.query(`DELETE FROM course_${instituteNumber} WHERE id = ?`, {
     replacements: [courseId],
+    type: QueryTypes.DELETE,
   });
   res.status(200).json({
     message: "course deleted successfully",
@@ -88,9 +91,13 @@ const getAllCourse = async (req: IExtendedRequest, res: Response) => {
 const getSingleCourse = async (req:IExtendedRequest,res:Response)=>{
     const instituteNumber = req.user?.currentInstituteNumber;
     const courseId = req.params.id
-    const course = await sequelize.query(`SELECT * FROM course)_${instituteNumber} WHERE id =?`,{
-        replacements:[courseId]
-    })
+    const course = await sequelize.query(
+      `SELECT * FROM course)_${instituteNumber} WHERE id =?`,
+      {
+        replacements: [courseId],
+        type: QueryTypes.SELECT,
+      }
+    );
     res.status(200).json({
         message : "single course fetched",
         data:course
