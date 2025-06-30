@@ -2,8 +2,8 @@ import { Request } from "express";
 
 export interface IExtendedRequest extends Request {
   user?: {
-    id: string;
-    currentInstituteNumber: string | number;
+    id : string;
+    currentInstituteNumber?: string | number |null ;
   };
-  instituteNumber?:string | number
+
 }

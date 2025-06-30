@@ -7,8 +7,8 @@ import { IExtendedRequest } from "../../../middleware/type";
 
 const createCourse =async(req:IExtendedRequest,res:Response)=>{
     const instituteNumber =req.user?.currentInstituteNumber
-    const {coursePrice,courseName,courseDescription,courseDuration,courseLevel}=req.body
-    if(!coursePrice || !courseName||!courseDescription||!courseDuration||!courseLevel){
+    const {coursePrice,courseName,courseDescription,courseDuration,courseLevel,categoryId}=req.body
+    if(!coursePrice || !courseName||!courseDescription||!courseDuration||!courseLevel||!categoryId){
         return res.status(400).json({
             message:"Please provide coursePrice,courseName,courseDescription,courseDuration,courseLevel"
         })
@@ -19,7 +19,7 @@ const createCourse =async(req:IExtendedRequest,res:Response)=>{
     /// above was correct
     const courseThumbnail =req.file?req.file.path : null
      const returnData = await sequelize.query(
-      `INSERT INTO course_${instituteNumber} (coursePrice,courseName,courseDescription,courseDuration,courseLevel,courseThumbnail)VALUES(?,?,?,?,?,?)`,
+      `INSERT INTO course_${instituteNumber} (coursePrice,courseName,courseDescription,courseDuration,courseLevel,courseThumbnail,categoryId)VALUES(?,?,?,?,?,?,?)`,
       {
         replacements: [
           coursePrice,
@@ -27,7 +27,8 @@ const createCourse =async(req:IExtendedRequest,res:Response)=>{
           courseDescription,
           courseDuration,
           courseLevel,
-          courseThumbnail
+          courseThumbnail,
+          categoryId
         ],
       }
     )
