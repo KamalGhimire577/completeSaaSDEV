@@ -76,7 +76,12 @@ const getAllCourse = async (req: IExtendedRequest, res: Response) => {
 
     // Query dynamic table
     const tableName = `course_${instituteNumber}`;
-    const courses = await sequelize.query(`SELECT * FROM \`${tableName}\`;`);
+    const courses = await sequelize.query(
+      `SELECT * FROM course_${instituteNumber} JOIN category_${instituteNumber} ON course_${instituteNumber}.categoryId = category_${instituteNumber}.id`,
+      { // category table ko content lai yata join garako 
+        type: QueryTypes.SELECT,
+      }
+    );
 
      res.status(200).json({
       message: "Courses fetched",

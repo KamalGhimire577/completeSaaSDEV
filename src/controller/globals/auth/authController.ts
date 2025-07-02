@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import User from "../../../database/models/userModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import generateJWTToken from "../../../services/generateJwtToken";
+interface Idata{
+  id :string
+}
 class AuthController {
   // static method for registration
   static async registerUser(req: Request, res: Response) {
@@ -59,11 +63,10 @@ class AuthController {
       if (isPassWordMatch) {
       /// login vaayo tokan gen garnu paryo
         
-     const token = jwt.sign({id : data[0].id},"thisissecrethai",{
-      expiresIn : "10d"
-     })
-     res.json({
-      token :token
+     const token  = generateJWTToken({id:data[0].id})
+     res.status(200).json({
+      token :token,
+      message:"user login sucessfully"
      })
 
       }
